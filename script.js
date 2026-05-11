@@ -11,6 +11,11 @@ const strengthBar = document.getElementById('strength-bar');
 const strengthText = document.getElementById('strength-text');
 const toast = document.getElementById('toast');
 
+const UPPERCASE_CHARS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+const LOWERCASE_CHARS = 'abcdefghijklmnopqrstuvwxyz';
+const NUMBER_CHARS = '0123456789';
+const SYMBOL_CHARS = '!@#$%^&*()_+~`|}{[]:;?><,./-=';
+
 // Update length display
 lengthEl.addEventListener('input', () => {
     lengthValEl.innerText = lengthEl.value;
@@ -33,51 +38,58 @@ function showToast() {
     }, 2000);
 }
 
-// Generate Event - Now calls the Python Backend
-generateBtn.addEventListener('click', async () => {
+// Generate Event
+generateBtn.addEventListener('click', () => {
     const length = +lengthEl.value;
     const hasLower = lowercaseEl.checked;
     const hasUpper = uppercaseEl.checked;
     const hasNumber = numbersEl.checked;
     const hasSymbol = symbolsEl.checked;
 
-    passwordEl.innerText = 'Generating...';
-
-    try {
-        const response = await fetch('/generate', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                length: length,
-                use_letters: hasLower || hasUpper, // Original Python script uses use_letters
-                use_numbers: hasNumber,
-                use_symbols: hasSymbol
-            })
-        });
-
-        const data = await response.json();
-        
-        if (data.password) {
-            passwordEl.innerText = data.password;
-            updateStrength(data.password);
-        } else {
-            passwordEl.innerText = 'Error: ' + data.error;
-        }
-    } catch (error) {
-        console.error('Error:', error);
-        passwordEl.innerText = 'Server Error';
-    }
+    const password = generateSecurePassword(length, hasLower, hasUpper, hasNumber, hasSymbol);
+    passwordEl.innerText = password;
+    updateStrength(password);
 });
 
+function generateSecurePassword(length, lower, upper, number, symbol) {
+    let charSet = '';
+    if (lower) charSet += LOWERCASE_CHARS;
+    if (upper) charSet += UPPERCASE_CHARS;
+    if (number) charSet += NUMBER_CHARS;
+    if (symbol) charSet += SYMBOL_CHARS;
+
+    if (charSet === '') return 'Select at least one!';
+
+    let password = '';
+    const array = new Uint32Array(length);
+    window.crypto.getRandomValues(array);
+
+    for (let i = 0; i < length; i++) {
+        password += charSet[array[i] % charSet.length];
+    }
+
+    return password;
+}
+
 function updateStrength(password) {
+    if (password === 'Select at least one!') {
+        strengthBar.style.width = '0%';
+        strengthText.innerText = 'Strength: --';
+        return;
+    }
+
     let strength = 0;
-    if (password.length > 8) strength += 25;
-    if (password.length > 12) strength += 25;
-    if (/[A-Z]/.test(password) && /[a-z]/.test(password)) strength += 15;
-    if (/[0-9]/.test(password)) strength += 15;
-    if (/[^A-Za-z0-9]/.test(password)) strength += 20;
+    if (password.length >= 12) strength += 25;
+    if (password.length >= 16) strength += 15;
+    
+    const hasLower = /[a-z]/.test(password);
+    const hasUpper = /[A-Z]/.test(password);
+    const hasNumber = /[0-9]/.test(password);
+    const hasSymbol = /[^A-Za-z0-9]/.test(password);
+
+    if (hasLower && hasUpper) strength += 20;
+    if (hasNumber) strength += 20;
+    if (hasSymbol) strength += 20;
 
     strengthBar.style.width = strength + '%';
     
