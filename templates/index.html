@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VaultGen | Premium Password Generator</title>
+    <meta name="description" content="Generate secure, custom passwords with our premium glassmorphic password generator tool.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+    <div class="bg-blobs">
+        <div class="blob blob-1"></div>
+        <div class="blob blob-2"></div>
+    </div>
+
+    <main class="container" id="app">
+        <h1>VaultGen</h1>
+        <p class="subtitle">Secure, fast, and customizable password generation.</p>
+
+        <section class="result-container">
+            <span id="password">Click Generate</span>
+            <button class="copy-btn" id="copy" title="Copy to clipboard">
+                <i class="fa-regular fa-copy"></i>
+            </button>
+        </section>
+
+        <div class="strength-wrapper">
+            <div class="strength-bar-bg">
+                <div id="strength-bar"></div>
+            </div>
+            <span class="strength-text" id="strength-text">Strength: --</span>
+        </div>
+
+        <div class="settings">
+            <div class="setting">
+                <label>Password Length: <span id="length-val">16</span></label>
+            </div>
+            <div class="length-slider-container">
+                <input type="range" id="length" min="6" max="64" value="16">
+            </div>
+
+            <div class="setting" style="margin-top: 24px;">
+                <label>Include Uppercase</label>
+                <label class="switch">
+                    <input type="checkbox" id="uppercase" checked>
+                    <span class="slider"></span>
+                </label>
+            </div>
+
+            <div class="setting">
+                <label>Include Lowercase</label>
+                <label class="switch">
+                    <input type="checkbox" id="lowercase" checked>
+                    <span class="slider"></span>
+                </label>
+            </div>
+
+            <div class="setting">
+                <label>Include Numbers</label>
+                <label class="switch">
+                    <input type="checkbox" id="numbers" checked>
+                    <span class="slider"></span>
+                </label>
+            </div>
+
+            <div class="setting">
+                <label>Include Symbols</label>
+                <label class="switch">
+                    <input type="checkbox" id="symbols" checked>
+                    <span class="slider"></span>
+                </label>
+            </div>
+        </div>
+
+        <button class="generate-btn" id="generate">
+            <i class="fa-solid fa-rotate"></i>
+            Generate Password
+        </button>
+    </main>
+
+    <div class="toast" id="toast">
+        <i class="fa-solid fa-check"></i> Copied to clipboard!
+    </div>
+
+    <script src="/static/js/script.js"></script>
+</body>
+</html>
